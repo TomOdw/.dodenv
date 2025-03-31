@@ -8,9 +8,10 @@ My attempt of creating a DevContainer-like environment for my projects.
 Basically just a python script, which builds a docker image from a dockerfile, 
 creates and starts a container, and opens a container-bash.
 
-Repository can be cloned in any project, dodenv uses any Dockerfile, which is 
-present within the .dodenv directory. Currently neovim and my configuration is 
-installed within the container.
+Repository can be cloned in any project. Multiple Dockerfiles can be used by dodenv.
+They are referenced with the run command, and a possible file extension as a second 
+argument. If no second argument is passed, the 'default' Dockerfile is used, which 
+currently installs neovim and my configuration within the container.
 
 
 ## Prerequisites
@@ -18,19 +19,32 @@ installed within the container.
 - docker-engine
 
 
-## Branches
-Here I list branches of dodenv (just other Dockerfiles for conveniently setting up my 
+## Derivates
+Here I list my Derivates of dodenv (just other Dockerfiles for conveniently setting up my 
 different types of projects, e.g. for developing with ESP-IDF)
-- ESP-IDF: TODO Description
+- Dockerfile (default): Neovim 10.4 with my config, other stuff.
+- Dockerfile.ESP-IDF: Builds ESP-IDF v5.4
 
 ## Usage
 ### Run the development environment
 1. Within your project, clone the repository.
-2. Remove the .git folder within .dodenv.
-3. Customize the Dockerfile
-4. Run ```sudo python3 .dodenv/dodenv.py run```
+3. Add a Dockerfile with a custom extension or customize the default Dockerfile, e.g.: 
+Dockerfile.MY_CUSTOM
+4. Run ```sudo python3 .dodenv/dodenv.py run``` to use the default Dockerfile or: 
+```sudo python3 .dodenv/dodenv.py run MY_CUSTOM``` to use the created (or existing) 
+dockerfile
 
-The current terminal then is a bash session within the container. To attach another 
+**Hint:**
+Best practise is to place a shell-script within the project, e.g.: dodenv
+```sh
+#!/bin/bash
+
+sudo python3 ./.dodenv/dodenv.py run MY_CUSTOM
+```
+Make it executable with chmod +x and you have an convenient way to start the development 
+environment.
+
+The current terminal gets a bash session within the container. To attach another 
 terminal to the container, simply execute the command again and a new bash session 
 will open in the new terminal. 
 
