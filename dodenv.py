@@ -45,7 +45,6 @@ def main():
             static_Dockerfile_extension = "." + sys.argv[2]
         match sys.argv[1]:
             case "run":
-                print(static_Dockerfile_extension)
                 return run()
             case "delete":
                 return delete()
