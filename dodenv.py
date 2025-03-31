@@ -17,15 +17,24 @@ import subprocess
 
 # ### Functions ####
 def main():
-    # get global constants, container and image name
+    # Global declarations
+    global const_ProjectPath
     global const_ContainerName
-    const_ContainerName = get_project_name()
     global const_ImageName
-    const_ImageName = get_docker_img_name(const_ContainerName)
-    # initilize global static vars
     global static_Dockerfile_extension
-    static_Dockerfile_extension = ""
     global static_ImageGotUpdate
+
+    # Set project path
+    current_path = os.path.abspath(__file__)
+    const_ProjectPath = os.path.abspath(
+        os.path.join(current_path, "..", ".."))
+
+    # Set Container and image Name
+    const_ContainerName = os.path.basename(const_ProjectPath).lower()
+    const_ImageName = const_ContainerName + "_img"
+
+    # initilize global static vars
+    static_Dockerfile_extension = ""
     static_ImageGotUpdate = False
 
     # Evaluate Arguments
@@ -212,7 +221,8 @@ def build():
         "Building temporary container image...")
     print(static_Dockerfile_extension)
     subprocess.run(
-            "sudo docker build . -f Dockerfile" + static_Dockerfile_extension +
+            "sudo docker build . -f " + const_ProjectPath +
+            "/.dodenv/Dockerfile" + static_Dockerfile_extension +
             " -t " + tempImageName, shell=True)
     # Dont capture the output here, next step is verifying it...
 
@@ -372,17 +382,6 @@ def reset():
     if result != 0:
         return result
     return 0
-
-
-def get_project_name():
-    current_path = os.path.abspath(__file__)
-    project_path = os.path.abspath(os.path.join(current_path, "..", ".."))
-    project_name = os.path.basename(project_path)
-    return project_name.lower()
-
-
-def get_docker_img_name(project_name):
-    return str(project_name).lower() + "_img"
 
 
 # ### Program Execution ####
