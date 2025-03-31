@@ -15,30 +15,28 @@ import os
 import subprocess
 
 
-# #### Init Functions ####
-def get_project_name():
-    current_path = os.path.abspath(__file__)
-    project_path = os.path.abspath(os.path.join(current_path, "..", ".."))
-    project_name = os.path.basename(project_path)
-    return project_name.lower()
-
-
-def get_docker_img_name(project_name):
-    return str(project_name).lower() + "_img"
-
-
-# #### Global Vars ####
-const_ContainerName = get_project_name()
-const_ImageName = get_docker_img_name(const_ContainerName)
-
-static_ImageGotUpdate = False
-
-
 # ### Functions ####
 def main():
-    if len(sys.argv) == 2:
+    # get global constants, container and image name
+    global const_ContainerName
+    const_ContainerName = get_project_name()
+    global const_ImageName
+    const_ImageName = get_docker_img_name(const_ContainerName)
+    # initilize global static vars
+    global static_Dockerfile_extension
+    static_Dockerfile_extension = ""
+    global static_ImageGotUpdate
+    static_ImageGotUpdate = False
+
+    # Evaluate Arguments
+    argc = len(sys.argv)
+    if argc == 2 or argc == 3:
+        if argc == 3:
+            # Other dockerfile used than default
+            static_Dockerfile_extension = "." + sys.argv[2]
         match sys.argv[1]:
             case "run":
+                print(static_Dockerfile_extension)
                 return run()
             case "delete":
                 return delete()
@@ -212,9 +210,10 @@ def build():
     print(
         "[STAGE BUILD ][INFO]: " +
         "Building temporary container image...")
+    print(static_Dockerfile_extension)
     subprocess.run(
-            "sudo docker build . -t " +
-            tempImageName, shell=True)
+            "sudo docker build . -f Dockerfile" + static_Dockerfile_extension +
+            " -t " + tempImageName, shell=True)
     # Dont capture the output here, next step is verifying it...
 
     # Get Existing images, id from names:
@@ -323,7 +322,6 @@ def build():
             "[STAGE BUILD ][ERROR]: " +
             "Error removing temp container image")
         return -1
-
     static_ImageGotUpdate = True
     print(
         "[STAGE BUILD ][INFO]: " +
@@ -374,6 +372,17 @@ def reset():
     if result != 0:
         return result
     return 0
+
+
+def get_project_name():
+    current_path = os.path.abspath(__file__)
+    project_path = os.path.abspath(os.path.join(current_path, "..", ".."))
+    project_name = os.path.basename(project_path)
+    return project_name.lower()
+
+
+def get_docker_img_name(project_name):
+    return str(project_name).lower() + "_img"
 
 
 # ### Program Execution ####
