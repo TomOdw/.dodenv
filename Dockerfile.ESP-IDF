@@ -1,0 +1,56 @@
+FROM  debian:12
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe/Berlin
+
+#Install with apt
+RUN apt update && \
+    apt upgrade -y && \
+    apt install -y \
+      wget \
+      ripgrep \
+      gcc \
+      make \
+      cmake \
+      git \
+      npm \
+      unzip
+
+#Install neovim 10.4
+RUN cd ~ && \
+    wget https://github.com/neovim/neovim-releases/releases/download/v0.10.4/nvim-linux-x86_64.deb && \
+    apt install -y ./nvim-linux-x86_64.deb && \
+    rm nvim-linux-x86_64.deb
+
+#Clone my dotfiles for neovim
+RUN cd ~ && \
+    git clone https://github.com/TomOdw/dotfiles.git && \
+    mkdir .config && \
+    cp -a dotfiles/.config/nvim .config/ && \
+    rm -r dotfiles
+
+#Start neovim for lazy install
+RUN nvim --headless +qall!
+
+#Now MasonInstallAll
+RUN nvim --headless +MasonInstallAll +qall!
+
+
+####### ESP-IDF Section #######
+#Install Prerequisites for the toolchain
+RUN apt install -y \
+      git wget flex bison gperf python3 python3-pip python3-venv \
+      cmake ninja-build ccache libffi-dev libssl-dev dfu-util \
+      libusb-1.0-0
+
+#Get ESP-IDF
+RUN mkdir -p ~/esp && \
+    cd ~/esp && \
+    git clone -b v5.4.1 --recursive https://github.com/espressif/esp-idf.git
+
+#Set up the Tools
+RUN cd ~/esp/esp-idf && \
+    ./install.sh esp32
+
+#Set up the Environment Variables
+RUN echo ". /root/esp/esp-idf/export.sh" >> /root/.bashrc
