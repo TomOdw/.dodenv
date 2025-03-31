@@ -83,8 +83,8 @@ def attach():
         "[STAGE ATTACH][INFO]: " +
         "Attaching to running container...")
     subprocess.run(
-            "sudo docker exec -it " + const_ContainerName + " bash",
-            shell=True)
+        "sudo docker exec -it -w /root/workspace " + const_ContainerName +
+        " bash", shell=True)
     print(
         "[STAGE ATTACH][INFO]: " +
         "Done, returned from attached container.")
@@ -185,9 +185,13 @@ def create():
     print(
         "[STAGE CREATE][INFO]: " +
         "Creating container from image...")
+    this_files_path = os.path.abspath(__file__)
+    project_path = os.path.abspath(os.path.join(this_files_path, "..", ".."))
+    print(project_path)
     subprocess.run(
         "sudo docker create -it --name " + const_ContainerName +
-        " " + const_ImageName, shell=True, capture_output=True)
+        " -v " + project_path + ":/root/workspace " + const_ImageName,
+        shell=True, capture_output=True)
     # This returns the full container id...
     outstring = subprocessout.stdout.decode().strip()
     if outstring != "":
