@@ -200,7 +200,7 @@ def create():
         shell=True, capture_output=True)
     # This returns the full container id...
     outstring = subprocessout.stdout.decode().strip()
-    if outstring != "":
+    if outstring == "":
         print(
             "[STAGE CREATE][ERROR]: " +
             "Error creating container")
