@@ -1,64 +1,88 @@
 # .dodenv
-Docker Development Environment
 
-**Work in progress**
+## Docker Development Environment
 
-My attempt of creating a DevContainer-like environment for my projects.
+🚧 **Work in Progress** 🚧
 
-Basically just a python script, which builds a docker image from a dockerfile, 
-creates and starts a container, and opens a container-bash.
+`.dodenv` is a Python-based script designed to create a DevContainer-like environment for 
+development projects. It automates building and running Docker containers, providing a 
+seamless development experience.
 
-Repository can be cloned in any project. Multiple Dockerfiles can be used by dodenv.
-They are referenced with the run command, and a possible file extension as a second 
-argument. If no second argument is passed, the 'default' Dockerfile is used, which 
-currently installs neovim and my configuration within the container.
+## Overview
 
+`.dodenv` simplifies containerized development by:
+
+- Building a Docker image from a specified Dockerfile.
+- Running a container and attaching the terminal to an interactive bash session.
+- Removing the container upon exit.
+- Supporting multiple terminals attaching to the same container.
+- Allowing selection of different Dockerfiles and passing additional `docker run` arguments.
+
+This repository can be cloned into any project, and multiple Dockerfiles can be managed 
+using `.dodenv`. By default, a `Dockerfile` is provided, which installs Neovim along with 
+a custom configuration inside the container.
 
 ## Prerequisites
-- Python3
-- docker-engine
 
+- Python 3
+- Docker Engine
 
-## Derivates
-Here I list my Derivates of dodenv (just other Dockerfiles for conveniently setting up my 
-different types of projects, e.g. for developing with ESP-IDF)
-- Dockerfile (default): Neovim 10.4 with my config, other stuff.
-- Dockerfile.ESP-IDF: Builds ESP-IDF v5.4
+## Variants
+
+Different Dockerfiles can be used for various project setups. Below are some available variants:
+
+- Dockerfile (default): Installs Neovim 10.4 with my custom configurations and additional utilities.
+- Dockerfile.ESP-IDF: Builds ESP-IDF v5.4 for ESP-based development.
 
 ## Usage
-### Run the development environment
-1. Within your project, clone the repository.
-3. Add a Dockerfile with a custom extension or customize the default Dockerfile, e.g.: 
-Dockerfile.MY_CUSTOM
-4. Run ```sudo python3 .dodenv/dodenv.py run``` to use the default Dockerfile or: 
-```sudo python3 .dodenv/dodenv.py run MY_CUSTOM``` to use the created (or existing) 
-dockerfile
 
-**Hint:**
-Best practise is to place a shell-script within the project, e.g.: dodenv
+### Running the Development Environment
+
+1. Clone this repository inside your project:
+   ```sh
+   git clone <repository_url> .dodenv
+   ```
+2. Create a custom Dockerfile or modify the default one (e.g., `Dockerfile.MY_CUSTOM`).
+3. Run the following command to start the container using the default Dockerfile:
+   ```sh
+   sudo python3 .dodenv/dodenv.py run
+   ```
+   To use a custom Dockerfile:
+   ```sh
+   sudo python3 .dodenv/dodenv.py run MY_CUSTOM
+   ```
+4. Optionally, pass arguments to `docker run`, for example:
+   ```sh
+   sudo python3 .dodenv/dodenv.py run MY_CUSTOM --device=/dev/tty0
+   ```
+
+Each execution of the `run` command attaches the terminal to a bash session inside the container. 
+If executed in another terminal, a new bash session opens within the same container.
+
+`.dodenv` leverages Docker's caching mechanism for efficiency. If the Dockerfile changes, the 
+container is stopped, removed, and recreated to reflect the updates.
+
+### Deleting the Development Environment
+
+To stop and remove the container along with its associated Docker image (while keeping the cache 
+intact), run:
+
 ```sh
-#!/bin/bash
-
-sudo python3 ./.dodenv/dodenv.py run MY_CUSTOM
+sudo python3 .dodenv/dodenv.py delete
 ```
-Make it executable with chmod +x and you have an convenient way to start the development 
-environment.
 
-The current terminal gets a bash session within the container. To attach another 
-terminal to the container, simply execute the command again and a new bash session 
-will open in the new terminal. 
+### Resetting the Development Environment
 
-dodenv relies on docker cache, to run fast (every run execution will build a 
-temporary docker image, it checks if the image id matches with a prior build, if it 
-doesn't match, i.e. the Dockerfile was altered, the docker container is stopped, 
-removed and recreated).
+To delete and immediately recreate the environment, run:
 
-### Delete the development environment
-Run ```sudo python3 .dodenv/dodenv.py delete```
+```sh
+sudo python3 .dodenv/dodenv.py reset
+```
 
-Stops the container and removes it, deletes the docker image, cache remains untouched.
+This effectively executes `delete` followed by `run`, ensuring the latest configuration is applied.
 
-### Reset the developement environment
-Run ```sudo python3 .dodenv/dodenv.py reset```
+---
 
-Simply executes the delete command, followed by the run command.
+For contributions, issues, or feature requests, feel free to open an issue or submit a pull request. 🚀
+
+
