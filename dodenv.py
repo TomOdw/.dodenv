@@ -88,7 +88,7 @@ def attach():
     print(
         "[STAGE ATTACH][INFO]: " +
         "Attaching to running container...")
-    subprocess.run(
+    subprocessout = subprocess.run(
         "sudo docker exec -it -w /root/workspace " + const_ContainerName +
         " bash", shell=True)
     print(
@@ -151,7 +151,7 @@ def create():
         # Containers exsist
         lines = outstring.split("\n")
         for line in lines:
-            if str(line) == const_ContainerName:
+            if line.find(const_ContainerName) != -1:
                 # Container Exsits
                 if static_ImageGotUpdate is False:
                     # Image not update and container exist, nothing to do
@@ -165,7 +165,7 @@ def create():
                         "[STAGE CREATE][INFO]: " +
                         "Container exsists, but image was updated, " +
                         "stopping container...")
-                    subprocess.run(
+                    subprocessout = subprocess.run(
                         "sudo docker stop " + const_ContainerName,
                         shell=True, capture_output=True)
                     outstring = subprocessout.stdout.decode().strip()
@@ -178,7 +178,7 @@ def create():
                     print(
                         "[STAGE CREATE][INFO]: " +
                         "Removing container")
-                    subprocess.run(
+                    subprocessout = subprocess.run(
                         "sudo docker rm " + const_ContainerName,
                         shell=True, capture_output=True)
                     outstring = subprocessout.stdout.decode().strip()
@@ -194,8 +194,9 @@ def create():
     this_files_path = os.path.abspath(__file__)
     project_path = os.path.abspath(os.path.join(this_files_path, "..", ".."))
     print(project_path)
-    subprocess.run(
+    subprocessout = subprocess.run(
         "sudo docker create -it --name " + const_ContainerName +
+        " -v /dev:/dev" +
         " -v " + project_path + ":/root/workspace " + const_ImageName,
         shell=True, capture_output=True)
     # This returns the full container id...
@@ -219,7 +220,7 @@ def build():
         "[STAGE BUILD ][INFO]: " +
         "Building temporary container image...")
     print(static_Dockerfile_extension)
-    subprocess.run(
+    subprocessout = subprocess.run(
             "sudo docker build . -f " + const_ProjectPath +
             "/.dodenv/Dockerfile" + static_Dockerfile_extension +
             " -t " + tempImageName, shell=True)
@@ -258,6 +259,10 @@ def build():
             "[STAGE BUILD ][ERROR]: " +
             "Temp contianer was not created")
         return -1
+    print(
+        "[STAGE BUILD ][INFO]: " +
+        "Temp container image built sucessfully, " +
+        "check if container image exist...")
 
     # Check if non-temp image exisits
     if image_id != "":
@@ -309,6 +314,10 @@ def build():
                     "[STAGE BUILD ][ERROR]: " +
                     "Error removing old container image")
                 return -1
+    else:
+        print(
+            "[STAGE BUILD ][INFO]: " +
+            "Container image does not exsist.")
 
     # Re-Tag Temp-Img to non-tmp image
     print(
