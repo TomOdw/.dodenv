@@ -40,7 +40,7 @@ Different Dockerfiles can be used for various project setups. Below are some ava
 
 1. Clone this repository inside your project:
    ```sh
-   git clone <repository_url> .dodenv
+   git clone https://github.com/TomOdw/.dodenv.git .dodenv
    ```
 2. Create a custom Dockerfile or modify the default one (e.g., `Dockerfile.MY_CUSTOM`).
 3. Run the following command to start the container using the default Dockerfile:
@@ -62,7 +62,7 @@ If executed in another terminal, a new bash session opens within the same contai
 `.dodenv` leverages Docker's caching mechanism for efficiency. If the Dockerfile changes, the 
 container is stopped, removed, and recreated to reflect the updates.
 
-**Tip:** If you are using tmux, try my plugin [projactions](https://github.com/TomOdw/projactions). 
+**Tipp:** If you are using tmux, try my plugin [projactions](https://github.com/TomOdw/projactions). 
 Add a project specific `.dodenv` `run` command to the `Environment` keybind, to easily start dodenv.
 
 ### Deleting the Development Environment
