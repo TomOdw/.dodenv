@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # @file     dodenv.py
 # @author   Tom Christ
 # @date     2025-03-31
