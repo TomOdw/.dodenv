@@ -19,8 +19,8 @@ seamless development experience.
 - Allowing selection of different Dockerfiles and passing additional `docker run` arguments.
 
 This repository can be cloned into any project, and multiple Dockerfiles can be managed 
-using `.dodenv`. By default, a `Dockerfile` is provided, which installs Neovim along with 
-a custom configuration inside the container.
+using `.dodenv`. By default, a `Dockerfile` is provided, which installs Neovim and tmux along 
+with my custom configuration inside the container.
 
 ## Prerequisites
 
@@ -31,7 +31,7 @@ a custom configuration inside the container.
 
 Different Dockerfiles can be used for various project setups. Below are some available variants:
 
-- Dockerfile (default): Installs Neovim 10.4 with my custom configurations and additional utilities.
+- Dockerfile (default): Installs Neovim 10.4 and tmux with my custom configurations and some additional utilities.
 - Dockerfile.ESP-IDF: Builds ESP-IDF v5.4 for ESP-based development.
 
 ## Usage
@@ -45,15 +45,15 @@ Different Dockerfiles can be used for various project setups. Below are some ava
 2. Create a custom Dockerfile or modify the default one (e.g., `Dockerfile.MY_CUSTOM`).
 3. Run the following command to start the container using the default Dockerfile:
    ```sh
-   sudo python3 .dodenv/dodenv.py run
+   sudo ./.dodenv/dodenv.py run
    ```
    To use a custom Dockerfile:
    ```sh
-   sudo python3 .dodenv/dodenv.py run MY_CUSTOM
+   sudo ./.dodenv/dodenv.py run MY_CUSTOM
    ```
 4. Optionally, pass arguments to `docker run`, for example:
    ```sh
-   sudo python3 .dodenv/dodenv.py run MY_CUSTOM --device=/dev/tty0
+   sudo ./.dodenv/dodenv.py run MY_CUSTOM --device=/dev/tty0
    ```
 
 Each execution of the `run` command attaches the terminal to a bash session inside the container. 
@@ -61,6 +61,9 @@ If executed in another terminal, a new bash session opens within the same contai
 
 `.dodenv` leverages Docker's caching mechanism for efficiency. If the Dockerfile changes, the 
 container is stopped, removed, and recreated to reflect the updates.
+
+**Tip:** If you are using tmux, try my plugin [projactions](https://github.com/TomOdw/projactions). 
+Add a project specific `.dodenv` `run` command to the `Environment` keybind, to easily start dodenv.
 
 ### Deleting the Development Environment
 
